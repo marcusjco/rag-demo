@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Meridian Supply Co. — Knowledge Base</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0b0f1a;
+      --panel:   #111827;
+      --card:    #1a2236;
+      --border:  #1e2d45;
+      --text:    #e2e8f0;
+      --muted:   #64748b;
+      --accent:  #d97757;
+      --blue:    #3b82f6;
+      --green:   #22c55e;
+      --purple:  #818cf8;
+      --amber:   #f59e0b;
+      --red:     #ef4444;
+    }
+
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      height: 52px; min-height: 52px;
+      padding: 0 24px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .header-left { display: flex; align-items: center; gap: 12px; }
+    .logo-mark {
+      width: 30px; height: 30px; border-radius: 8px;
+      background: linear-gradient(135deg, #818cf8, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: #fff;
+    }
+    .header-title { font-size: 14px; font-weight: 600; color: #f1f5f9; }
+    .header-sub   { font-size: 11px; color: var(--muted); }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .kb-pill {
+      display: flex; align-items: center; gap: 6px;
+      background: #0f1f3d; border: 1px solid #1e3a6e;
+      border-radius: 20px; padding: 4px 10px;
+      font-size: 11px; color: var(--blue);
+    }
+
+    /* ── Layout ── */
+    .workspace { flex: 1; display: flex; overflow: hidden; }
+
+    /* ── Left: Knowledge Base ── */
+    .kb-panel {
+      width: 340px; min-width: 340px;
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden;
+    }
+    .kb-header {
+      padding: 14px 20px 10px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .kb-header h2 { font-size: 11px; font-weight: 600; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; }
+    .kb-header p  { font-size: 11px; color: var(--muted); margin-top: 4px; }
+
+    .kb-scroll {
+      flex: 1; overflow-y: auto; padding: 12px 16px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .kb-scroll::-webkit-scrollbar { width: 4px; }
+    .kb-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    .doc-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px;
+      transition: border-color 0.15s;
+    }
+    .doc-card.active { border-color: var(--purple); }
+    .doc-name { font-size: 12px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; line-height: 1.3; }
+    .doc-sections { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .section-tag {
+      font-size: 10px; color: var(--muted);
+      background: var(--border); border-radius: 4px;
+      padding: 2px 6px;
+    }
+
+    .cat-tag {
+      display: inline-block; font-size: 10px; font-weight: 600;
+      padding: 2px 7px; border-radius: 10px; margin-bottom: 4px;
+    }
+    .cat-sensors    { background: #0d2316; color: var(--green); }
+    .cat-hardware   { background: #1e1b40; color: var(--purple); }
+    .cat-networking { background: #0f1f3d; color: var(--blue); }
+    .cat-catalog    { background: #2d200a; color: var(--amber); }
+    .cat-support    { background: #2d1212; color: var(--red); }
+
+    /* ── Right: Chat ── */
+    .chat-panel {
+      flex: 1; display: flex; flex-direction: column;
+      overflow: hidden; background: var(--bg);
+    }
+    .chat-header {
+      padding: 14px 24px 10px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .chat-header-left { display: flex; align-items: center; gap: 10px; }
+    .ai-icon {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, #818cf8, #3b82f6);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; color: #fff;
+    }
+    .chat-header h2 { font-size: 13px; font-weight: 600; color: #f1f5f9; }
+    .chat-header p  { font-size: 11px; color: var(--muted); }
+    .model-tag {
+      font-size: 10px; color: var(--purple);
+      background: #1e1b40; border: 1px solid #3730a3;
+      padding: 3px 8px; border-radius: 20px;
+    }
+
+    #messages {
+      flex: 1; overflow-y: auto;
+      padding: 20px 24px;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    #messages::-webkit-scrollbar { width: 4px; }
+    #messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+    #empty-state {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 8px; color: var(--muted); padding: 40px 24px;
+    }
+    #empty-state .empty-icon { font-size: 32px; margin-bottom: 8px; opacity: 0.5; }
+    #empty-state h2 { font-size: 16px; color: #64748b; font-weight: 500; }
+    #empty-state p  { font-size: 12px; text-align: center; max-width: 280px; line-height: 1.6; }
+
+    .msg { display: flex; gap: 10px; max-width: 100%; width: 100%; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+
+    .avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 700; flex-shrink: 0;
+    }
+    .msg.user  .avatar { background: var(--blue);   color: #fff; }
+    .msg.agent .avatar { background: var(--purple); color: #fff; }
+
+    .msg-content { display: flex; flex-direction: column; gap: 8px; max-width: calc(100% - 50px); }
+
+    .bubble {
+      padding: 10px 14px; border-radius: 10px;
+      font-size: 13px; line-height: 1.6;
+    }
+    .msg.user  .bubble { background: #1e3a5f; color: var(--text); border-radius: 10px 3px 10px 10px; }
+    .msg.agent .bubble { background: var(--card); color: var(--text); border-radius: 3px 10px 10px 10px; border: 1px solid var(--border); }
+
+    .bubble h1, .bubble h2, .bubble h3 { margin: 10px 0 4px; color: #f1f5f9; }
+    .bubble h1 { font-size: 15px; } .bubble h2 { font-size: 14px; } .bubble h3 { font-size: 13px; }
+    .bubble p  { margin-bottom: 6px; } .bubble p:last-child { margin-bottom: 0; }
+    .bubble ul, .bubble ol { padding-left: 18px; margin-bottom: 6px; }
+    .bubble li { margin-bottom: 3px; }
+    .bubble strong { color: #f1f5f9; }
+    .bubble code { background: #0b0f1a; padding: 1px 5px; border-radius: 3px; font-family: monospace; font-size: 11px; }
+
+    /* Source cards */
+    .sources-block { display: flex; flex-direction: column; gap: 6px; }
+    .source-label { font-size: 10px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; }
+    .source-cards { display: flex; flex-wrap: wrap; gap: 6px; }
+    .source-card {
+      background: #0f1a2e; border: 1px solid #1e3a6e;
+      border-radius: 6px; padding: 6px 10px;
+      font-size: 11px; color: #94a3b8;
+      max-width: 220px;
+    }
+    .source-card-doc { font-weight: 600; color: var(--blue); margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .source-card-sec { color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .source-card-score { color: var(--purple); font-size: 10px; margin-top: 2px; }
+
+    .thinking { display: flex; gap: 4px; padding: 8px 0; }
+    .thinking span {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--muted); animation: pulse 1.2s infinite;
+    }
+    .thinking span:nth-child(2) { animation-delay: 0.2s; }
+    .thinking span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes pulse {
+      0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+      40%            { opacity: 1;   transform: scale(1); }
+    }
+
+    .suggestions {
+      display: flex; flex-wrap: wrap; gap: 6px;
+      padding: 0 24px 12px;
+    }
+    .suggestion {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 20px; padding: 5px 12px;
+      font-size: 11px; color: #94a3b8; cursor: pointer;
+      transition: all 0.15s;
+    }
+    .suggestion:hover { border-color: var(--purple); color: var(--text); }
+
+    #input-area {
+      padding: 12px 24px 16px;
+      border-top: 1px solid var(--border);
+      display: flex; gap: 10px; align-items: flex-end; flex-shrink: 0;
+    }
+    #input {
+      flex: 1; background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; color: var(--text);
+      font-size: 13px; resize: none; outline: none;
+      min-height: 42px; max-height: 120px;
+      font-family: inherit; line-height: 1.5; transition: border-color 0.15s;
+    }
+    #input:focus { border-color: var(--purple); }
+    #input::placeholder { color: #334155; }
+    #send {
+      background: var(--purple); border: none; border-radius: 8px;
+      width: 42px; height: 42px; color: #fff; cursor: pointer;
+      font-size: 15px; display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s; flex-shrink: 0;
+    }
+    #send:hover    { background: #6366f1; }
+    #send:disabled { background: var(--border); cursor: not-allowed; }
+
+    .skeleton {
+      background: linear-gradient(90deg, var(--border) 25%, #253045 50%, var(--border) 75%);
+      background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px;
+    }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-line { height: 12px; margin-bottom: 8px; }
+    .skeleton-line.short { width: 65%; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="logo-mark">KB</div>
+    <div>
+      <div class="header-title">Meridian Supply Co.</div>
+      <div class="header-sub">Knowledge Base Assistant</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="kb-pill" id="chunk-count">Loading knowledge base...</div>
+  </div>
+</header>
+
+<div class="workspace">
+
+  <!-- Left: Knowledge base -->
+  <div class="kb-panel">
+    <div class="kb-header">
+      <h2>Loaded Documents</h2>
+      <p>All answers are grounded in these sources</p>
+    </div>
+    <div class="kb-scroll" id="doc-list">
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line short"></div>
+      <div class="skeleton skeleton-line"></div>
+      <div class="skeleton skeleton-line short"></div>
+    </div>
+  </div>
+
+  <!-- Right: Chat -->
+  <div class="chat-panel">
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="ai-icon">AI</div>
+        <div>
+          <h2>Knowledge Base Assistant</h2>
+          <p>Answers grounded in Meridian documentation — no hallucination</p>
+        </div>
+      </div>
+      <div class="model-tag">RAG + Claude Sonnet 4.6</div>
+    </div>
+
+    <div id="empty-state">
+      <div class="empty-icon">◈</div>
+      <h2>Ask about any product or policy</h2>
+      <p>The assistant retrieves the most relevant documentation sections, then uses Claude to synthesize a cited answer.</p>
+    </div>
+
+    <div id="messages" style="display:none"></div>
+
+    <div class="suggestions">
+      <div class="suggestion" onclick="ask(this.textContent)">How do I configure VLANs on the NS-24?</div>
+      <div class="suggestion" onclick="ask(this.textContent)">What's the read range of the RP-3200?</div>
+      <div class="suggestion" onclick="ask(this.textContent)">How do I reset the ISA-2400 to factory defaults?</div>
+      <div class="suggestion" onclick="ask(this.textContent)">What does the warranty cover?</div>
+      <div class="suggestion" onclick="ask(this.textContent)">How do I set up the GCU-1800 REST API?</div>
+    </div>
+
+    <div id="input-area">
+      <textarea id="input" placeholder="Ask about products, installation, configuration, pricing, support..." rows="1"></textarea>
+      <button id="send" onclick="sendMessage()">&#9650;</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  // ── Knowledge base list ──────────────────────────────────────────────────
+  const CAT_CLASSES = {
+    "Sensors": "cat-sensors", "Hardware": "cat-hardware",
+    "Networking": "cat-networking", "Catalog": "cat-catalog", "Support": "cat-support"
+  };
+
+  async function loadDocList() {
+    try {
+      const res  = await fetch("/api/documents");
+      if (!res.ok) throw new Error();
+      const docs = await res.json();
+      renderDocList(docs);
+    } catch {
+      renderStaticDocList();
+    }
+  }
+
+  function renderDocList(docs) {
+    const totalChunks = docs.reduce((s, d) => s + d.sections.length, 0);
+    document.getElementById("chunk-count").textContent = `${totalChunks} chunks loaded`;
+
+    document.getElementById("doc-list").innerHTML = docs.map(d => `
+      <div class="doc-card" id="doc-${d.doc.replace(/\s+/g,'-')}">
+        <span class="cat-tag ${CAT_CLASSES[d.category] || ''}">${d.category}</span>
+        <div class="doc-name">${d.doc}</div>
+        <div class="doc-sections">
+          ${d.sections.map(s => `<span class="section-tag">${s}</span>`).join("")}
+        </div>
+      </div>
+    `).join("");
+  }
+
+  function renderStaticDocList() {
+    document.getElementById("chunk-count").textContent = "19 chunks loaded";
+    const staticDocs = [
+      { doc:"ISA-2400 Industrial Sensor Array",          category:"Sensors",    sections:["Product Overview","Installation & Wiring","Configuration & Calibration","Troubleshooting"] },
+      { doc:"GCU-1800 Gateway Controller",               category:"Hardware",   sections:["Product Overview","Local REST API","Network Configuration"] },
+      { doc:"RP-3200 RFID Reader Pro",                   category:"Hardware",   sections:["Product Overview","Antenna Setup & Read Range","Integration Guide"] },
+      { doc:"NS-24 Network Switch Configuration Guide",  category:"Networking", sections:["Overview","VLAN Configuration","QoS & PoE"] },
+      { doc:"Meridian Supply Co. 2026 Product Catalog",  category:"Catalog",    sections:["Sensors & Monitoring","Hardware & Controllers","Networking","Software & Services"] },
+      { doc:"Support & Warranty Policy",                 category:"Support",    sections:["Warranty Terms","RMA Process","Support Tiers & SLA"] },
+    ];
+    renderDocList(staticDocs);
+  }
+
+  loadDocList();
+
+  // ── Chat ────────────────────────────────────────────────────────────────
+  const messagesEl = document.getElementById("messages");
+  const emptyState = document.getElementById("empty-state");
+  const inputEl    = document.getElementById("input");
+  const sendBtn    = document.getElementById("send");
+  let history = [];
+
+  function ask(text) { inputEl.value = text; sendMessage(); }
+
+  inputEl.addEventListener("keydown", e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  });
+  inputEl.addEventListener("input", () => {
+    inputEl.style.height = "auto";
+    inputEl.style.height = Math.min(inputEl.scrollHeight, 120) + "px";
+  });
+
+  function showMessages() {
+    if (emptyState.style.display !== "none") {
+      emptyState.style.display = "none";
+      messagesEl.style.display = "flex";
+    }
+  }
+
+  function appendMessage(role, html) {
+    showMessages();
+    const msg = document.createElement("div");
+    msg.className = `msg ${role}`;
+    if (role === "user") {
+      msg.innerHTML = `<div class="avatar">M</div><div class="msg-content"><div class="bubble">${html}</div></div>`;
+    } else {
+      msg.innerHTML = `<div class="avatar">AI</div><div class="msg-content">${html}</div>`;
+    }
+    messagesEl.appendChild(msg);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    return msg.querySelector(".msg-content");
+  }
+
+  function renderMarkdown(text) {
+    return text
+      .replace(/^### (.+)$/gm, "<h3>$1</h3>")
+      .replace(/^## (.+)$/gm,  "<h2>$1</h2>")
+      .replace(/^# (.+)$/gm,   "<h1>$1</h1>")
+      .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+      .replace(/`([^`]+)`/g,    "<code>$1</code>")
+      .replace(/^\* (.+)$/gm,   "<li>$1</li>")
+      .replace(/^- (.+)$/gm,    "<li>$1</li>")
+      .replace(/(<li>[\s\S]*?<\/li>(\n|$))+/g, m => `<ul>${m}</ul>`)
+      .replace(/\n\n/g, "</p><p>")
+      .replace(/^(?!<[hulo])(.+)$/gm, "<p>$1</p>");
+  }
+
+  function buildSourceCards(chunks) {
+    const cards = chunks.map(c => `
+      <div class="source-card">
+        <div class="source-card-doc">${c.doc}</div>
+        <div class="source-card-sec">${c.section}</div>
+        <div class="source-card-score">relevance ${(c.score * 100).toFixed(0)}%</div>
+      </div>
+    `).join("");
+    return `
+      <div class="sources-block">
+        <div class="source-label">Retrieved sources</div>
+        <div class="source-cards">${cards}</div>
+      </div>
+    `;
+  }
+
+  function highlightDocCard(chunks) {
+    document.querySelectorAll(".doc-card").forEach(el => el.classList.remove("active"));
+    chunks.forEach(c => {
+      const id = "doc-" + c.doc.replace(/\s+/g, "-");
+      const el = document.getElementById(id);
+      if (el) el.classList.add("active");
+    });
+  }
+
+  async function sendMessage() {
+    const text = inputEl.value.trim();
+    if (!text || sendBtn.disabled) return;
+
+    sendBtn.disabled = true;
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+
+    appendMessage("user", text);
+
+    // Agent message — starts with thinking dots, content added progressively
+    const agentContent = appendMessage("agent", '<div class="bubble"><div class="thinking"><span></span><span></span><span></span></div></div>');
+    let bubble = agentContent.querySelector(".bubble");
+    let responseText = "";
+    let sourcesRendered = false;
+
+    try {
+      const res = await fetch("/chat/stream", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: text, history }),
+      });
+
+      const reader  = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const lines = decoder.decode(value).split("\n").filter(l => l.startsWith("data: "));
+        for (const line of lines) {
+          const payload = JSON.parse(line.slice(6));
+
+          if (payload.type === "sources") {
+            agentContent.innerHTML = buildSourceCards(payload.chunks);
+            // Add a new bubble for the answer text
+            const newBubble = document.createElement("div");
+            newBubble.className = "bubble";
+            newBubble.innerHTML = '<div class="thinking"><span></span><span></span><span></span></div>';
+            agentContent.appendChild(newBubble);
+            bubble = newBubble;
+            sourcesRendered = true;
+            highlightDocCard(payload.chunks);
+          }
+
+          if (payload.type === "text") {
+            responseText += payload.content;
+            bubble.innerHTML = renderMarkdown(responseText);
+          }
+
+          if (payload.type === "done") {
+            history.push({ role: "user",      content: text });
+            history.push({ role: "assistant", content: responseText });
+            if (history.length > 16) history = history.slice(-16);
+          }
+        }
+        messagesEl.scrollTop = messagesEl.scrollHeight;
+      }
+    } catch (err) {
+      bubble.innerHTML = `<span style="color:var(--red)">Error: ${err.message}</span>`;
+    }
+
+    sendBtn.disabled = false;
+    inputEl.focus();
+  }
+</script>
+</body>
+</html>
