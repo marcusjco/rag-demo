@@ -15,7 +15,7 @@ A standard LLM response is the model working from its training data — you can'
 3. Injects those chunks into the prompt as context
 4. Tells Claude to answer *only* from those sources
 
-The model becomes a synthesizer over documents you control, not a black box. You can update the knowledge base, audit what got retrieved, and catch it when it tries to go off-script.
+The model reasons over documents you control, not a black box. You can update the knowledge base, audit what got retrieved, and catch it when it tries to go off-script.
 
 ## Architecture
 
