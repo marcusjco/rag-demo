@@ -36,21 +36,29 @@ def load_knowledge_base():
     print(f"Loaded {len(DOCUMENTS)} chunks into ChromaDB.")
 
 
-def retrieve(query: str, n_results: int = 4) -> list[dict]:
+def retrieve(query: str, n_results: int = 4, min_score: float = 0.3) -> list[dict]:
     col = _get_collection()
-    results = col.query(query_texts=[query], n_results=n_results)
+    # cap to available docs so ChromaDB doesn't throw when collection is smaller than n_results
+    n = min(n_results, col.count())
+    if n == 0:
+        return []
+
+    results = col.query(query_texts=[query], n_results=n)
 
     chunks = []
     for i, doc_text in enumerate(results["documents"][0]):
         meta = results["metadatas"][0][i]
         dist = results["distances"][0][i]
+        score = round(1 - dist, 3)
+        if score < min_score:
+            continue
         chunks.append({
             "id":       results["ids"][0][i],
             "text":     doc_text,
             "doc":      meta["doc"],
             "section":  meta["section"],
             "category": meta["category"],
-            "score":    round(1 - dist, 3),  # cosine similarity
+            "score":    score,
         })
     return chunks
 
