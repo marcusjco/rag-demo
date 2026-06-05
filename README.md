@@ -67,7 +67,7 @@ rag-demo/
 ## Running it locally
 
 ```bash
-git clone https://github.com/marcusjco/rag-demo.git
+git clone https://github.com/marcusrjcook/rag-demo.git
 cd rag-demo
 pip install -r requirements.txt
 
